@@ -1,0 +1,125 @@
+*,
+*::after,
+*::before {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.wrapper {
+    height: 100vh;
+    width: 100%;
+    padding: 5% 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.objects-list {
+    width: 100%;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+}
+
+.objects-list__item {
+    height: 100px;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #6633cc;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 1.3rem;
+    cursor: pointer;
+    position: relative;
+}
+
+.settings-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #b1b1b1;
+    border-radius: 10px;
+    padding: 3rem;
+}
+
+.settings-container__child {
+    height: 100%;
+}
+
+.settings-container__header {
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.8);
+    font-size: 1.2em;
+}
+
+.color__options,
+.text__options,
+.position__options {
+    list-style: none;
+}
+
+.color__item,
+.text__item,
+.position__item {
+    margin: 1.2em 0;
+}
+
+.text__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.text__textarea {
+    width: 100%;
+    resize: none;
+}
+
+.tooltip {
+    position: absolute;
+    width: 120px;
+    min-height: 80px;
+}
+
+.tooltip--primary {
+    background-color: #5577ff;
+}
+
+.tooltip--secondary {
+    background-color: #557733;
+}
+
+.tooltip--light {
+    background-color: #f3f3f3;
+}
+
+.tooltip--dark {
+    background-color: #1f1f1f;
+}
+
+.tooltip--accent {
+    background-color: #ffa502;
+}
+
+.tooltip--left {
+    right: calc(100% + 10px);
+}
+
+.tooltip--right {
+    left: calc(100% + 10px);
+}
+
+.tooltip--top {
+    bottom: calc(100% + 10px);
+}
+
+.tooltip--bottom {
+    top: calc(100% + 10px);
+}
+
+
+/*# sourceMappingURL=/styles.f43277d9.css.map */
