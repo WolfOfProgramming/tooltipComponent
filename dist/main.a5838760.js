@@ -117,175 +117,599 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/scripts/renderInput.js":[function(require,module,exports) {
-"use strict";
+})({"node_modules/lodash.debounce/index.js":[function(require,module,exports) {
+var global = arguments[3];
+/**
+ * lodash (Custom Build) <https://lodash.com/>
+ * Build: `lodash modularize exports="npm" -o ./`
+ * Copyright jQuery Foundation and other contributors <https://jquery.org/>
+ * Released under MIT license <https://lodash.com/license>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.renderInput = renderInput;
+/** Used as the `TypeError` message for "Functions" methods. */
+var FUNC_ERROR_TEXT = 'Expected a function';
 
-function renderInput(activeInputs) {
-  var formDeleteButton = "";
-  var defaultInputText = '';
+/** Used as references for various `Number` constants. */
+var NAN = 0 / 0;
 
-  if (activeInputs > 0) {
-    formDeleteButton =
-    /* HTML */
-    "\n            <button class=\"form__delete\" type=\"button\"></button>\n        ";
-  } else {
-    defaultInputText = 'It is default input text.';
+/** `Object#toString` result references. */
+var symbolTag = '[object Symbol]';
+
+/** Used to match leading and trailing whitespace. */
+var reTrim = /^\s+|\s+$/g;
+
+/** Used to detect bad signed hexadecimal string values. */
+var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+
+/** Used to detect binary string values. */
+var reIsBinary = /^0b[01]+$/i;
+
+/** Used to detect octal string values. */
+var reIsOctal = /^0o[0-7]+$/i;
+
+/** Built-in method references without a dependency on `root`. */
+var freeParseInt = parseInt;
+
+/** Detect free variable `global` from Node.js. */
+var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
+
+/** Detect free variable `self`. */
+var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+/** Used as a reference to the global object. */
+var root = freeGlobal || freeSelf || Function('return this')();
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max,
+    nativeMin = Math.min;
+
+/**
+ * Gets the timestamp of the number of milliseconds that have elapsed since
+ * the Unix epoch (1 January 1970 00:00:00 UTC).
+ *
+ * @static
+ * @memberOf _
+ * @since 2.4.0
+ * @category Date
+ * @returns {number} Returns the timestamp.
+ * @example
+ *
+ * _.defer(function(stamp) {
+ *   console.log(_.now() - stamp);
+ * }, _.now());
+ * // => Logs the number of milliseconds it took for the deferred invocation.
+ */
+var now = function() {
+  return root.Date.now();
+};
+
+/**
+ * Creates a debounced function that delays invoking `func` until after `wait`
+ * milliseconds have elapsed since the last time the debounced function was
+ * invoked. The debounced function comes with a `cancel` method to cancel
+ * delayed `func` invocations and a `flush` method to immediately invoke them.
+ * Provide `options` to indicate whether `func` should be invoked on the
+ * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
+ * with the last arguments provided to the debounced function. Subsequent
+ * calls to the debounced function return the result of the last `func`
+ * invocation.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is
+ * invoked on the trailing edge of the timeout only if the debounced function
+ * is invoked more than once during the `wait` timeout.
+ *
+ * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+ * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+ *
+ * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+ * for details over the differences between `_.debounce` and `_.throttle`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Function
+ * @param {Function} func The function to debounce.
+ * @param {number} [wait=0] The number of milliseconds to delay.
+ * @param {Object} [options={}] The options object.
+ * @param {boolean} [options.leading=false]
+ *  Specify invoking on the leading edge of the timeout.
+ * @param {number} [options.maxWait]
+ *  The maximum time `func` is allowed to be delayed before it's invoked.
+ * @param {boolean} [options.trailing=true]
+ *  Specify invoking on the trailing edge of the timeout.
+ * @returns {Function} Returns the new debounced function.
+ * @example
+ *
+ * // Avoid costly calculations while the window size is in flux.
+ * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+ *
+ * // Invoke `sendMail` when clicked, debouncing subsequent calls.
+ * jQuery(element).on('click', _.debounce(sendMail, 300, {
+ *   'leading': true,
+ *   'trailing': false
+ * }));
+ *
+ * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
+ * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
+ * var source = new EventSource('/stream');
+ * jQuery(source).on('message', debounced);
+ *
+ * // Cancel the trailing debounced invocation.
+ * jQuery(window).on('popstate', debounced.cancel);
+ */
+function debounce(func, wait, options) {
+  var lastArgs,
+      lastThis,
+      maxWait,
+      result,
+      timerId,
+      lastCallTime,
+      lastInvokeTime = 0,
+      leading = false,
+      maxing = false,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  wait = toNumber(wait) || 0;
+  if (isObject(options)) {
+    leading = !!options.leading;
+    maxing = 'maxWait' in options;
+    maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
   }
 
-  return "\n        <section class=\"form__section\">\n            <label class=\"form__label\" for=\"input\"\n                >Input\n                <span class=\"form__number\">".concat(activeInputs + 1, "</span></label\n            >\n            <div class=\"form__wrapper\">\n                <input\n                    class=\"form__input\"\n                    type=\"text\"\n                    name=\"input\"\n                    value=\"").concat(defaultInputText, "\"\n                />\n                ").concat(formDeleteButton, "\n            </div>\n        </section>\n    ");
+  function invokeFunc(time) {
+    var args = lastArgs,
+        thisArg = lastThis;
+
+    lastArgs = lastThis = undefined;
+    lastInvokeTime = time;
+    result = func.apply(thisArg, args);
+    return result;
+  }
+
+  function leadingEdge(time) {
+    // Reset any `maxWait` timer.
+    lastInvokeTime = time;
+    // Start the timer for the trailing edge.
+    timerId = setTimeout(timerExpired, wait);
+    // Invoke the leading edge.
+    return leading ? invokeFunc(time) : result;
+  }
+
+  function remainingWait(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime,
+        result = wait - timeSinceLastCall;
+
+    return maxing ? nativeMin(result, maxWait - timeSinceLastInvoke) : result;
+  }
+
+  function shouldInvoke(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime;
+
+    // Either this is the first call, activity has stopped and we're at the
+    // trailing edge, the system time has gone backwards and we're treating
+    // it as the trailing edge, or we've hit the `maxWait` limit.
+    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
+      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
+  }
+
+  function timerExpired() {
+    var time = now();
+    if (shouldInvoke(time)) {
+      return trailingEdge(time);
+    }
+    // Restart the timer.
+    timerId = setTimeout(timerExpired, remainingWait(time));
+  }
+
+  function trailingEdge(time) {
+    timerId = undefined;
+
+    // Only invoke if we have `lastArgs` which means `func` has been
+    // debounced at least once.
+    if (trailing && lastArgs) {
+      return invokeFunc(time);
+    }
+    lastArgs = lastThis = undefined;
+    return result;
+  }
+
+  function cancel() {
+    if (timerId !== undefined) {
+      clearTimeout(timerId);
+    }
+    lastInvokeTime = 0;
+    lastArgs = lastCallTime = lastThis = timerId = undefined;
+  }
+
+  function flush() {
+    return timerId === undefined ? result : trailingEdge(now());
+  }
+
+  function debounced() {
+    var time = now(),
+        isInvoking = shouldInvoke(time);
+
+    lastArgs = arguments;
+    lastThis = this;
+    lastCallTime = time;
+
+    if (isInvoking) {
+      if (timerId === undefined) {
+        return leadingEdge(lastCallTime);
+      }
+      if (maxing) {
+        // Handle invocations in a tight loop.
+        timerId = setTimeout(timerExpired, wait);
+        return invokeFunc(lastCallTime);
+      }
+    }
+    if (timerId === undefined) {
+      timerId = setTimeout(timerExpired, wait);
+    }
+    return result;
+  }
+  debounced.cancel = cancel;
+  debounced.flush = flush;
+  return debounced;
 }
-},{}],"src/scripts/renderButton.js":[function(require,module,exports) {
+
+/**
+ * Checks if `value` is the
+ * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+ * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(_.noop);
+ * // => true
+ *
+ * _.isObject(null);
+ * // => false
+ */
+function isObject(value) {
+  var type = typeof value;
+  return !!value && (type == 'object' || type == 'function');
+}
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return !!value && typeof value == 'object';
+}
+
+/**
+ * Checks if `value` is classified as a `Symbol` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+ * @example
+ *
+ * _.isSymbol(Symbol.iterator);
+ * // => true
+ *
+ * _.isSymbol('abc');
+ * // => false
+ */
+function isSymbol(value) {
+  return typeof value == 'symbol' ||
+    (isObjectLike(value) && objectToString.call(value) == symbolTag);
+}
+
+/**
+ * Converts `value` to a number.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to process.
+ * @returns {number} Returns the number.
+ * @example
+ *
+ * _.toNumber(3.2);
+ * // => 3.2
+ *
+ * _.toNumber(Number.MIN_VALUE);
+ * // => 5e-324
+ *
+ * _.toNumber(Infinity);
+ * // => Infinity
+ *
+ * _.toNumber('3.2');
+ * // => 3.2
+ */
+function toNumber(value) {
+  if (typeof value == 'number') {
+    return value;
+  }
+  if (isSymbol(value)) {
+    return NAN;
+  }
+  if (isObject(value)) {
+    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
+    value = isObject(other) ? (other + '') : other;
+  }
+  if (typeof value != 'string') {
+    return value === 0 ? value : +value;
+  }
+  value = value.replace(reTrim, '');
+  var isBinary = reIsBinary.test(value);
+  return (isBinary || reIsOctal.test(value))
+    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
+    : (reIsBadHex.test(value) ? NAN : +value);
+}
+
+module.exports = debounce;
+
+},{}],"src/scripts/renderTextOptions.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.renderButton = void 0;
+exports.renderTextOptions = void 0;
 
-var renderButton = function renderButton(type) {
-  var button =
-  /* HTML */
-  "\n        <button class=\"form__button form__button--".concat(type, "\" type=\"button\">\n            ").concat(type, "\n        </button>\n    ");
-  return button;
+var renderTextOptions = function renderTextOptions() {
+  return (
+    /* HTML */
+    "\n        <div\n            class=\"settings-container__section settings-container__section--text\"\n        >\n            <h2 class=\"settings-container__heading\">Text</h2>\n            <ul\n                class=\"settings-container__settings-list settings-container__settings-list--text\"\n            >\n                <li class=\"text-settings-list__item\">\n                    <label for=\"text-color\">Text color(HEX)</label>\n                    <input\n                        type=\"text\"\n                        id=\"text-color\"\n                        name=\"color HEX\"\n                        value=\"#ffffff\"\n                        class=\"text-settings-list__text-color-input\"\n                    />\n                </li>\n\n                <li class=\"text-settings-list__item\">\n                    <label for=\"max-length\">Max text length</label>\n                    <input\n                        type=\"text\"\n                        id=\"max-length\"\n                        name=\"Max length\"\n                        value=\"100\"\n                        class=\"text-settings-list__max-text-lenght-input\"\n                    />\n                </li>\n                <li class=\"text-settings-list__item\">\n                    <textarea\n                        class=\"text-settings-list__text-input\"\n                        name=\"text-area\"\n                        id=\"text-area\"\n                        cols=\"30\"\n                        rows=\"10\"\n                    ></textarea>\n                </li>\n            </ul>\n        </div>\n    "
+  );
 };
 
-exports.renderButton = renderButton;
-},{}],"src/scripts/validation.js":[function(require,module,exports) {
+exports.renderTextOptions = renderTextOptions;
+},{}],"src/scripts/renderColorOptions.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.createErrorParagraphs = exports.isInputsCorrect = void 0;
+exports.renderColorOptions = void 0;
 
-var isInputsCorrect = function isInputsCorrect(inputs) {
-  return !getEmptyInputs(inputs).length;
+var renderColorOptions = function renderColorOptions() {
+  return (
+    /* HTML */
+    "\n        <div\n            class=\"settings-container__section settings-container__section--color\"\n        >\n            <h2 class=\"settings-container__heading\">Color</h2>\n            <ul\n                class=\"settings-container__settings-list settings-container__settings-list--color\"\n            >\n                <li class=\"color-settings-list__item\">\n                    <input\n                        class=\"settings-container__input color-settings-list__input\"\n                        type=\"radio\"\n                        id=\"primary\"\n                        name=\"color\"\n                        value=\"primary\"\n                        checked\n                    />\n                    <label class=\"settings-container__label\" for=\"primary\"\n                        >Primary</label\n                    >\n                </li>\n                <li class=\"color-settings-list__item\">\n                    <input\n                        class=\"settings-container__input color-settings-list__input\"\n                        type=\"radio\"\n                        id=\"secondary\"\n                        name=\"color\"\n                        value=\"secondary\"\n                    />\n                    <label class=\"settings-container__label\" for=\"secondary\"\n                        >Secondary</label\n                    >\n                </li>\n                <li class=\"color-settings-list__item\">\n                    <input\n                        class=\"settings-container__input color-settings-list__input\"\n                        type=\"radio\"\n                        id=\"dark\"\n                        name=\"color\"\n                        value=\"dark\"\n                    />\n                    <label class=\"settings-container__label\" for=\"dark\"\n                        >Dark</label\n                    >\n                </li>\n\n                <li class=\"color-settings-list__item\">\n                    <input\n                        class=\"settings-container__input color-settings-list__input\"\n                        type=\"radio\"\n                        id=\"light\"\n                        name=\"color\"\n                        value=\"light\"\n                    />\n                    <label class=\"settings-container__label\" for=\"light\"\n                        >Light</label\n                    >\n                </li>\n                <li class=\"color-settings-list__item\">\n                    <input\n                        class=\"settings-container__input color-settings-list__input\"\n                        type=\"radio\"\n                        id=\"accent\"\n                        name=\"color\"\n                        value=\"accent\"\n                    />\n                    <label class=\"settings-container__label\" for=\"accent\"\n                        >Accent</label\n                    >\n                </li>\n            </ul>\n        </div>\n    "
+  );
 };
 
-exports.isInputsCorrect = isInputsCorrect;
+exports.renderColorOptions = renderColorOptions;
+},{}],"src/scripts/renderPositionOptions.js":[function(require,module,exports) {
+"use strict";
 
-var createErrorParagraphs = function createErrorParagraphs(inputs) {
-  var emptyInputs = getEmptyInputs(inputs);
-  var errorParagraph =
-  /* HTML */
-  "\n        <p class=\"form__error\">The field cannot be empty</p>\n    ";
-  emptyInputs.forEach(function (emptyInput) {
-    return emptyInput.parentNode.insertAdjacentHTML('afterend', errorParagraph);
-  });
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.renderPositionOptions = void 0;
+
+var renderPositionOptions = function renderPositionOptions() {
+  return (
+    /* HTML */
+    "\n        <div\n            class=\"settings-container__section settings-container__section--position\"\n        >\n            <h2 class=\"settings-container__heading\">Position</h2>\n            <ul\n                class=\"settings-container__settings-list settings-container__settings-list--position\"\n            >\n                <li class=\"position-settings-list__item\">\n                    <input\n                        class=\"settings-container__input position-settings-list__input\"\n                        type=\"radio\"\n                        id=\"top\"\n                        name=\"position\"\n                        value=\"top\"\n                    />\n                    <label class=\"settings-container__label\" for=\"top\"\n                        >Top</label\n                    >\n                </li>\n                <li class=\"position-settings-list__item\">\n                    <input\n                        class=\"settings-container__input position-settings-list__input\"\n                        type=\"radio\"\n                        id=\"bottom\"\n                        name=\"position\"\n                        value=\"bottom\"\n                    />\n                    <label class=\"settings-container__label\" for=\"bottom\"\n                        >Bottom</label\n                    >\n                </li>\n                <li class=\"position-settings-list__item\">\n                    <input\n                        class=\"settings-container__input position-settings-list__input\"\n                        type=\"radio\"\n                        id=\"right\"\n                        name=\"position\"\n                        value=\"right\"\n                    />\n                    <label class=\"settings-container__label\" for=\"right\"\n                        >Right</label\n                    >\n                </li>\n\n                <li class=\"position-settings-list__item\">\n                    <input\n                        class=\"settings-container__input position-settings-list__input\"\n                        type=\"radio\"\n                        id=\"left\"\n                        name=\"position\"\n                        value=\"left\"\n                        checked\n                    />\n                    <label class=\"settings-container__label\" for=\"left\"\n                        >Left</label\n                    >\n                </li>\n            </ul>\n        </div>\n    "
+  );
 };
 
-exports.createErrorParagraphs = createErrorParagraphs;
-
-var getEmptyInputs = function getEmptyInputs(inputs) {
-  return Array.from(inputs).filter(function (input) {
-    return input.value === '';
-  });
-};
+exports.renderPositionOptions = renderPositionOptions;
 },{}],"src/scripts/main.js":[function(require,module,exports) {
 "use strict";
 
-var _renderInput = require("./renderInput");
+var _index = _interopRequireDefault(require("lodash.debounce/index"));
 
-var _renderButton = require("./renderButton");
+var _renderTextOptions = require("../scripts/renderTextOptions");
 
-var _validation = require("./validation");
+var _renderColorOptions = require("../scripts/renderColorOptions");
 
-var formButtons = document.querySelector('.form__buttons');
-var formContainer = document.querySelector('.form__container');
-formButtons.insertAdjacentHTML('beforeend', (0, _renderButton.renderButton)('add'));
-formButtons.insertAdjacentHTML('beforeend', (0, _renderButton.renderButton)('submit'));
-var addButton = document.querySelector('.form__button--add');
-var submitButton = document.querySelector('.form__button--submit');
-var MAX_INPUT_COUNT = 6;
-var activeInputs = 0;
+var _renderPositionOptions = require("../scripts/renderPositionOptions");
 
-var deleteErrorParagraphs = function deleteErrorParagraphs() {
-  var formSections = document.querySelectorAll('.form__section');
-  formSections.forEach(function (formSection) {
-    var formError = formSection.querySelector('.form__error');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-    if (formError) {
-      formSection.removeChild(formError);
-    }
+var settingsContainer = document.querySelector('.settings-container');
+settingsContainer.insertAdjacentHTML('beforeend', (0, _renderColorOptions.renderColorOptions)());
+settingsContainer.insertAdjacentHTML('beforeend', (0, _renderPositionOptions.renderPositionOptions)());
+settingsContainer.insertAdjacentHTML('beforeend', (0, _renderTextOptions.renderTextOptions)());
+var DEFAULT_TOOLTIP_BACKGROUND_COLOR = 'primary';
+var DEFAULT_TOOLTIP_POSITION = 'left';
+var DEFAULT_TOOLTIP_TEXT_COLOR = '#ffffff';
+var DEFAULT_TOOLTIP_MAX_TEXT_LENGHT = 100;
+var DEFAULT_TOOLTIP_TEXT = 'Default Text';
+var userSettings = {
+  backgroundColor: DEFAULT_TOOLTIP_BACKGROUND_COLOR,
+  position: DEFAULT_TOOLTIP_POSITION,
+  textColor: DEFAULT_TOOLTIP_TEXT_COLOR,
+  maxTextLenght: DEFAULT_TOOLTIP_MAX_TEXT_LENGHT,
+  tooltipText: DEFAULT_TOOLTIP_TEXT
+};
+var interfaceObjects = document.querySelectorAll('.objects-list__item');
+var backgroundColorSettings = settingsContainer.querySelector('.settings-container__settings-list--color');
+var positionSettings = settingsContainer.querySelector('.settings-container__settings-list--position');
+var textColorInput = settingsContainer.querySelector('.text-settings-list__text-color-input');
+var maxTextLengthInput = settingsContainer.querySelector('.text-settings-list__max-text-lenght-input');
+var tooltipTextInput = settingsContainer.querySelector('.text-settings-list__text-input');
+var hexColorValidationRegEx = /^#([0-9A-F]{3}){1,2}$/i; //Checks, if given value is proper HEX color
+
+var activeObject = 0;
+
+var renderTooltip = function renderTooltip(_ref, tooltipText) {
+  var backgroundColor = _ref.backgroundColor,
+      position = _ref.position;
+  return (
+    /* HTML */
+    "\n        <div\n            class=\"tooltip tooltip--color-".concat(backgroundColor, " tooltip--position-").concat(position, "\"\n        >\n            <span class=\"tooltip__text\">").concat(tooltipText, "</span>\n        </div>\n    ")
+  );
+};
+
+var updateTooltip = function updateTooltip(userSettings, activeElement) {
+  deleteOldTooltip();
+  createTooltip(userSettings, activeElement);
+};
+
+var getTextareaValue = function getTextareaValue(_ref2) {
+  var maxTextLenght = _ref2.maxTextLenght,
+      tooltipText = _ref2.tooltipText;
+
+  if (tooltipText.length <= maxTextLenght) {
+    return tooltipText;
+  }
+
+  return tooltipText.slice(0, maxTextLenght);
+};
+
+var updateTextColor = function updateTextColor(_ref3) {
+  var textColor = _ref3.textColor;
+  var tooltip = document.querySelector('.tooltip');
+  var tooltipSpan = tooltip.firstElementChild;
+
+  if (tooltipSpan) {
+    tooltipSpan.style.color = textColor;
+  }
+};
+
+var createTooltip = function createTooltip(userSettings, activeElement) {
+  var tooltipText = getTextareaValue(userSettings);
+  var tooltip = renderTooltip(userSettings, tooltipText);
+  activeElement.insertAdjacentHTML('beforeend', tooltip);
+  updateTextColor(userSettings);
+};
+
+var deleteOldTooltip = function deleteOldTooltip() {
+  var oldTooltip = document.querySelector('.tooltip');
+
+  if (oldTooltip) {
+    oldTooltip.remove();
+  }
+};
+
+var getActiveObjectIndex = function getActiveObjectIndex(object) {
+  return Array.from(interfaceObjects).indexOf(object);
+};
+
+var addOnClickEvent = function addOnClickEvent(userSettings, element) {
+  element.addEventListener('click', function (e) {
+    activeObject = getActiveObjectIndex(e.target);
+    updateTooltip(userSettings, e.target);
   });
 };
 
-var updateCounter = function updateCounter(result) {
-  if (result) {
-    activeInputs += 1;
-  } else {
-    activeInputs -= 1;
-  }
-};
-
-var updateNumbers = function updateNumbers() {
-  var spans = document.querySelectorAll('.form__number');
-  spans.forEach(function (span, index) {
-    return span.textContent = index + 1;
+var addCustomOnClickEvents = function addCustomOnClickEvents(userSettings, elements) {
+  elements.forEach(function (element) {
+    return addOnClickEvent(userSettings, element);
   });
 };
 
-var generateInput = function generateInput(activeInputs) {
-  var formInput = (0, _renderInput.renderInput)(activeInputs);
-  formContainer.insertAdjacentHTML('beforeend', formInput);
-  var currentElement = formContainer.lastElementChild;
-  var currentDeleteButton = currentElement.querySelector('.form__delete');
-
-  if (currentDeleteButton) {
-    currentDeleteButton.addEventListener('click', function (e) {
-      if (e.target.parentNode.parentNode.classList.contains('form__section')) {
-        e.target.parentNode.parentNode.remove();
-        deleteErrorParagraphs();
-        updateNumbers();
-        updateCounter(false);
-        addButton.classList.remove('form__button--disabled');
-      }
-    });
-  }
-
-  currentElement.querySelector('.form__input').focus();
-  updateCounter(true);
+var isProperHexColor = function isProperHexColor(color) {
+  return hexColorValidationRegEx.test(color);
 };
 
-generateInput(activeInputs);
-addButton.addEventListener('click', function () {
-  var inputs = document.querySelectorAll('.form__input');
-  deleteErrorParagraphs();
+var setTextColor = function setTextColor(userSettings) {
+  var color = textColorInput.value;
 
-  if (activeInputs < MAX_INPUT_COUNT) {
-    if ((0, _validation.isInputsCorrect)(inputs)) {
-      generateInput(activeInputs);
-    } else {
-      (0, _validation.createErrorParagraphs)(inputs);
-    }
-  }
-
-  if (activeInputs === MAX_INPUT_COUNT) {
-    addButton.classList.add('form__button--disabled');
-  }
-});
-submitButton.addEventListener('click', function (e) {
-  e.preventDefault();
-  deleteErrorParagraphs();
-  var inputs = document.querySelectorAll('.form__input');
-
-  if ((0, _validation.isInputsCorrect)(inputs)) {
-    var url = new URL(document.URL);
-    var inputsValues = [];
-    inputs.forEach(function (input) {
-      return inputsValues.push(input.value);
-    });
-    window.location.href = url.origin + '?passwords=' + inputsValues.join(';');
+  if (isProperHexColor(color)) {
+    userSettings.textColor = color;
   } else {
-    (0, _validation.createErrorParagraphs)(inputs);
+    userSettings.textColor = DEFAULT_TEXT_COLOR;
   }
+};
+
+var isBiggerThanZero = function isBiggerThanZero(value) {
+  return value > 0;
+};
+
+var isValidNumber = function isValidNumber(value) {
+  return !isNaN(value) && value;
+};
+
+var setMaxTextLength = function setMaxTextLength(userSettings) {
+  var maxTextLenght = maxTextLengthInput.value;
+  console.log(maxTextLenght);
+
+  if (isValidNumber(maxTextLenght) && isBiggerThanZero(maxTextLenght)) {
+    userSettings.maxTextLenght = maxTextLenght;
+  }
+};
+
+var setTextareaValue = function setTextareaValue(userSettings) {
+  userSettings.tooltipText = tooltipTextInput.value;
+};
+
+backgroundColorSettings.addEventListener('change', function () {
+  var activeBackgroundColor = settingsContainer.querySelector('.color-settings-list__input:checked');
+  userSettings.backgroundColor = activeBackgroundColor.value;
+  updateTooltip(userSettings, interfaceObjects[activeObject]);
 });
-},{"./renderInput":"src/scripts/renderInput.js","./renderButton":"src/scripts/renderButton.js","./validation":"src/scripts/validation.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+positionSettings.addEventListener('change', function () {
+  var activePosition = settingsContainer.querySelector('.position-settings-list__input:checked');
+  userSettings.position = activePosition.value;
+  updateTooltip(userSettings, interfaceObjects[activeObject]);
+});
+textColorInput.addEventListener('input', (0, _index.default)(function () {
+  setTextColor(userSettings);
+  updateTooltip(userSettings, interfaceObjects[activeObject]);
+}, 1000));
+maxTextLengthInput.addEventListener('input', (0, _index.default)(function () {
+  setMaxTextLength(userSettings);
+  updateTooltip(userSettings, interfaceObjects[activeObject]);
+}, 1000));
+tooltipTextInput.addEventListener('input', (0, _index.default)(function () {
+  setTextareaValue(userSettings);
+  updateTooltip(userSettings, interfaceObjects[activeObject]);
+}, 1000));
+addCustomOnClickEvents(userSettings, interfaceObjects);
+},{"lodash.debounce/index":"node_modules/lodash.debounce/index.js","../scripts/renderTextOptions":"src/scripts/renderTextOptions.js","../scripts/renderColorOptions":"src/scripts/renderColorOptions.js","../scripts/renderPositionOptions":"src/scripts/renderPositionOptions.js"}],"../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -313,7 +737,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "39003" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "41975" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
