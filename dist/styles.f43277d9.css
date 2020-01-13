@@ -1,124 +1,121 @@
 *,
 *::after,
 *::before {
-    padding: 0;
     margin: 0;
+    padding: 0;
     box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
-.wrapper {
-    height: 100vh;
-    width: 100%;
-    padding: 5% 20%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-}
-
-.objects-list {
-    width: 100%;
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-}
-
-.objects-list__item {
-    height: 100px;
-    width: 100px;
+.container {
+    background-color: #1e1e25;
+    min-width: 100%;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #6633cc;
-    border-radius: 10px;
-    color: #ffffff;
-    font-size: 1.3rem;
-    cursor: pointer;
-    position: relative;
 }
 
-.settings-container {
+.form {
+    background-color: #27293d;
     width: 100%;
-    display: flex;
-    justify-content: space-between;
-    border: 1px solid #b1b1b1;
+    max-width: 500px;
+    height: 800px;
     border-radius: 10px;
-    padding: 3rem;
+    padding: 20px;
 }
 
-.settings-container__child {
-    height: 100%;
+.form__section {
+    height: 115px;
 }
 
-.settings-container__header {
-    text-transform: uppercase;
-    color: rgba(0, 0, 0, 0.8);
-    font-size: 1.2em;
+.form__label {
+    display: block;
+    color: #ffffff;
+    padding: 5px 0;
 }
 
-.color__options,
-.text__options,
-.position__options {
-    list-style: none;
-}
-
-.color__item,
-.text__item,
-.position__item {
-    margin: 1.2em 0;
-}
-
-.text__item {
+.form__wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
 }
 
-.text__textarea {
-    width: 100%;
-    resize: none;
+.form__input {
+    height: 45px;
+    border: 2px solid #4444ff;
+    border-radius: 20px;
+    padding: 15px;
+    width: 350px;
+    background: transparent;
+    color: #ffffff;
+    flex-shrink: 1;
 }
 
-.tooltip {
-    position: absolute;
-    width: 120px;
-    min-height: 80px;
+.form__input:focus {
+    border: 2px solid #d54fd7;
 }
 
-.tooltip--primary {
-    background-color: #5577ff;
+.form__error {
+    color: #ff1133;
+    font-size: 0.8em;
+    padding: 5px 0;
 }
 
-.tooltip--secondary {
-    background-color: #557733;
+.form__delete {
+    border: none;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background: transparent;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
 }
 
-.tooltip--light {
-    background-color: #f3f3f3;
+.form__delete::after,
+.form__delete::before {
+    content: '';
+    height: 100%;
+    background: #ffffff;
+    width: 10px;
 }
 
-.tooltip--dark {
-    background-color: #1f1f1f;
+.form__delete::after {
+    transform: translateX(-10px) rotate(45deg);
 }
 
-.tooltip--accent {
-    background-color: #ffa502;
+.form__delete::before {
+    transform: translateX(10px) rotate(-45deg);
 }
 
-.tooltip--left {
-    right: calc(100% + 10px);
+.form__buttons {
+    display: flex;
+    justify-content: space-between;
 }
 
-.tooltip--right {
-    left: calc(100% + 10px);
+.form__button {
+    width: 140px;
+    height: 45px;
+    border: 1px solid #606b91;
+    background-color: #305cf4;
+    color: #ffffff;
+    cursor: pointer;
+    border-radius: 20px;
+    font-size: 1.3em;
 }
 
-.tooltip--top {
-    bottom: calc(100% + 10px);
+.form__button--submit {
+    background-color: #d54fd7;
 }
 
-.tooltip--bottom {
-    top: calc(100% + 10px);
+.form__button--add::first-letter,
+.form__button--submit::first-letter {
+    text-transform: uppercase;
+}
+
+.form__button--disabled {
+    background-color: #444444;
 }
 
 
